@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pt
+*.pth
+*.ckpt
+*.log
+
+data/
+*.zarr
+*.nc
