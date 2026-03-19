@@ -1,0 +1,38 @@
+[
+  {
+    "model": "msfv2_momfusion_soft",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260222_164822__msfv2_momfusion_soft.log"
+  },
+  {
+    "model": "msfv2_momfusion_top2",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260222_184307__msfv2_momfusion_top2.log"
+  },
+  {
+    "model": "msfv2_momfusion_top1",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260222_210037__msfv2_momfusion_top1.log"
+  },
+  {
+    "model": "msfv2_scalehead_moe_soft",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260222_222315__msfv2_scalehead_moe_soft.log"
+  },
+  {
+    "model": "msfv2_scalehead_moe_top2",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260223_010851__msfv2_scalehead_moe_top2.log"
+  },
+  {
+    "model": "msfv2_scalehead_moe_top1",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260223_042349__msfv2_scalehead_moe_top1.log"
+  }
+]

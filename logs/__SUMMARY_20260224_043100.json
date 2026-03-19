@@ -1,0 +1,20 @@
+[
+  {
+    "model": "msfv2_scalehead_moe_soft2",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260223_163537__msfv2_scalehead_moe_soft2.log"
+  },
+  {
+    "model": "msfv2_scalehead_moe_top22",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260223_225635__msfv2_scalehead_moe_top22.log"
+  },
+  {
+    "model": "msfv2_scalehead_moe_top12",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260224_014544__msfv2_scalehead_moe_top12.log"
+  }
+]

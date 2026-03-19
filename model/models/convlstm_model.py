@@ -8,15 +8,15 @@ class ConvLSTM_Model(nn.Module):
 
     def __init__(self, num_layers, num_hidden, configs, **kwargs):
         super().__init__()
-        T, C, H, W = configs.in_shape
+        T, C, H, W = configs["in_shape"]
 
         self.configs = configs
-        self.frame_channel = configs.patch_size * configs.patch_size * C
+        self.frame_channel = configs["patch_size"] * configs["patch_size"] * C
         self.num_layers = num_layers
         self.num_hidden = num_hidden
 
-        height = H // configs.patch_size
-        width = W // configs.patch_size
+        height = H // configs["patch_size"]
+        width = W // configs["patch_size"]
 
         cell_list = []
         for i in range(num_layers):
@@ -27,9 +27,9 @@ class ConvLSTM_Model(nn.Module):
                     num_hidden[i],
                     height,
                     width,
-                    configs.filter_size,
-                    configs.stride,
-                    configs.layer_norm,
+                    configs["filter_size"],
+                    configs["stride"],
+                    configs["layer_norm"],
                 )
             )
 
@@ -48,8 +48,11 @@ class ConvLSTM_Model(nn.Module):
         device = frames_tensor.device
         frames = frames_tensor.contiguous()
 
-        B, _, _, H, W = frames.shape
+        B, T, C, H, W = frames.shape
 
+        Tin = int(self.configs["input_len"])
+        Tout = int(self.configs["pred_len"])
+        
         h_t = []
         c_t = []
         for i in range(self.num_layers):
@@ -58,10 +61,10 @@ class ConvLSTM_Model(nn.Module):
 
         outputs = []
 
-        total_steps = self.configs.pre_seq_length + self.configs.aft_seq_length - 1
+        total_steps = self.configs["input_len"] + self.configs["pred_len"] - 1
 
         for t in range(total_steps):
-            if t < self.configs.pre_seq_length:
+            if t < self.configs["input_len"]:
                 net = frames[:, t]
             else:
                 net = x_gen
@@ -74,6 +77,6 @@ class ConvLSTM_Model(nn.Module):
             x_gen = self.conv_last(h_t[-1])
             outputs.append(x_gen)
 
-        # [B, T_out, H, W, C]
-        outputs = torch.stack(outputs, dim=1).permute(0, 1, 3, 4, 2).contiguous()
+        outputs = torch.stack(outputs, dim=1).contiguous()
+        outputs = outputs[:, Tin-1:Tin-1+Tout].contiguous()
         return outputs

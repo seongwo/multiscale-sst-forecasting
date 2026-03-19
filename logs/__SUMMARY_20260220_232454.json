@@ -1,0 +1,68 @@
+[
+  {
+    "model": "simvp_incepu",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_121406__simvp_incepu.log"
+  },
+  {
+    "model": "convlstm",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_122223__convlstm.log"
+  },
+  {
+    "model": "predrnn",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_130439__predrnn.log"
+  },
+  {
+    "model": "mim",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_142649__mim.log"
+  },
+  {
+    "model": "mau",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_161752__mau.log"
+  },
+  {
+    "model": "vit_gru",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_175737__vit_gru.log"
+  },
+  {
+    "model": "vit",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_180940__vit.log"
+  },
+  {
+    "model": "timsformer",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_181720__timsformer.log"
+  },
+  {
+    "model": "timsformer2",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_202734__timsformer2.log"
+  },
+  {
+    "model": "msf",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_222054__msf.log"
+  },
+  {
+    "model": "msfv2",
+    "ok": true,
+    "returncode": 0,
+    "log": "/home/perseverance/lim/openstl-env/projects/logs/20260220_224644__msfv2.log"
+  }
+]

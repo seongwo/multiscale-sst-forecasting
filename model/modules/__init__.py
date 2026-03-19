@@ -16,6 +16,7 @@ from .mmvp_modules import (ResBlock, RRDB, ResidualDenseBlock_4C, Up, Conv3D, Co
                            MatrixPredictor3DConv, SimpleMatrixPredictor3DConv_direct, PredictModel) 
 from .swinlstm_modules import UpSample, DownSample, STconvert
 
+
 __all__ = [
     'ConvLSTMCell', 'CausalLSTMCell', 'GHU', 'SpatioTemporalLSTMCell', 'SpatioTemporalLSTMCellv2',
     'MIMBlock', 'MIMN', 'Eidetic3DLSTMCell', 'tf_Conv3d',
@@ -26,7 +27,7 @@ __all__ = [
     'SwinSubBlock', 'UniformerSubBlock', 'VANSubBlock', 'ViTSubBlock', 'TAUSubBlock',
     'ResBlock', 'RRDB', 'ResidualDenseBlock_4C', 'Up', 'Conv3D', 'ConvLayer',
     'MatrixPredictor3DConv', 'SimpleMatrixPredictor3DConv_direct', 'PredictModel',
-    'UpSample', 'DownSample', 'STconvert' 
+    'UpSample', 'DownSample', 'STconvert', "TimeScaleSlotsMemory", "ConcatSlotsFuseSeq", "ResidualGatedFuseSeq", "ResidualGatedFuse2D", "add_readout_to_sequence"
     
     
 ]

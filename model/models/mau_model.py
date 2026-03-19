@@ -2,7 +2,7 @@ import math
 import torch
 import torch.nn as nn
 
-from openstl.modules import MAUCell
+from model.modules import MAUCell
 
 
 class MAU_Model(nn.Module):
@@ -13,35 +13,35 @@ class MAU_Model(nn.Module):
 
     """
 
-    def __init__(self, num_layers, num_hidden, configs, **kwargs):
+    def __init__(self, configs, **kwargs):
         super(MAU_Model, self).__init__()
-        T, C, H, W = configs.in_shape
+        T, C, H, W = configs["in_shape"]
         
         self.configs = configs
-        self.frame_channel = configs.patch_size * configs.patch_size * C
-        self.num_layers = num_layers
-        self.num_hidden = num_hidden
-        self.tau = configs.tau
-        self.cell_mode = configs.cell_mode
+        self.frame_channel = configs["patch_size"] * configs["patch_size"] * C
+        self.num_layers = configs["num_layers"]
+        self.num_hidden = configs["num_hidden"]
+        self.tau = configs["tau"]
+        self.cell_mode = configs["cell_mode"]
         self.states = ['recall', 'normal']
-        if not self.configs.model_mode in self.states:
+        if not self.configs["model_mode"] in self.states:
             raise AssertionError
         cell_list = []
 
-        width = W // configs.patch_size // configs.sr_size
-        height = H // configs.patch_size // configs.sr_size
+        width = W // configs["patch_size"] // configs["sr_size"]
+        height = H // configs["patch_size"] // configs["sr_size"]
         self.MSE_criterion = nn.MSELoss()
 
-        for i in range(num_layers):
-            in_channel = num_hidden[i - 1]
+        for i in range(self.num_layers):
+            in_channel = self.num_hidden[0] if i == 0 else self.num_hidden[i - 1]
             cell_list.append(
-                MAUCell(in_channel, num_hidden[i], height, width, configs.filter_size,
-                        configs.stride, self.tau, self.cell_mode)
+                MAUCell(in_channel, self.num_hidden[i], height, width, configs["filter_size"],
+                        configs["stride"], self.tau, self.cell_mode)
             )
         self.cell_list = nn.ModuleList(cell_list)
 
         # Encoder
-        n = int(math.log2(configs.sr_size))
+        n = int(math.log2(configs["sr_size"]))
         encoders = []
         encoder = nn.Sequential()
         encoder.add_module(name='encoder_t_conv{0}'.format(-1),
@@ -105,76 +105,78 @@ class MAU_Model(nn.Module):
         self.conv_last_sr = nn.Conv2d(
             self.frame_channel * 2, self.frame_channel, kernel_size=1, stride=1, padding=0)
 
-    def forward(self, frames_tensor, mask_true, **kwargs):
-        # [batch, length, height, width, channel] -> [batch, length, channel, height, width]
-        device = frames_tensor.device
-        frames = frames_tensor.permute(0, 1, 4, 2, 3).contiguous()
-        mask_true = mask_true.permute(0, 1, 4, 2, 3).contiguous()
+    def forward(self, x, **kwargs):
+        device = x.device
+        x = x.contiguous()
 
-        batch_size = frames.shape[0]
-        height = frames.shape[3] // self.configs.sr_size
-        width = frames.shape[4] // self.configs.sr_size
-        frame_channels = frames.shape[2]
-        next_frames = []
+        Tin = int(self.configs["input_len"])
+        Tout = int(self.configs["pred_len"])
+
+        if x.dim() != 5 or x.shape[1] != Tin or x.shape[2] != 1:
+            raise ValueError(f"Expected x shape (B,{Tin},1,H,W), got {tuple(x.shape)}")
+
+        B, _, C, H, W = x.shape
+        sr = int(self.configs.get("sr_size", 1))
+        if sr < 1:
+            raise ValueError("sr_size must be >= 1")
+
+        # low-res spatial size after encoder downsample
+        h_lr = H // sr
+        w_lr = W // sr
+
+        # init temporal states
         T_t = []
         T_pre = []
         S_pre = []
-        x_gen = None
         for layer_idx in range(self.num_layers):
-            tmp_t = []
-            tmp_s = []
-            if layer_idx == 0:
-                in_channel = self.num_hidden[layer_idx]
-            else:
-                in_channel = self.num_hidden[layer_idx - 1]
-            for i in range(self.tau):
-                tmp_t.append(torch.zeros(
-                    [batch_size, in_channel, height, width]).to(device))
-                tmp_s.append(torch.zeros(
-                    [batch_size, in_channel, height, width]).to(device))
+            tmp_t, tmp_s = [], []
+            in_ch = self.num_hidden[layer_idx] if layer_idx == 0 else self.num_hidden[layer_idx - 1]
+            for _ in range(self.tau):
+                tmp_t.append(torch.zeros((B, in_ch, h_lr, w_lr), device=device, dtype=x.dtype))
+                tmp_s.append(torch.zeros((B, in_ch, h_lr, w_lr), device=device, dtype=x.dtype))
             T_pre.append(tmp_t)
             S_pre.append(tmp_s)
 
-        for t in range(self.configs.total_length - 1):
-            if t < self.configs.pre_seq_length:
-                net = frames[:, t]
+        # initialize T_t for each layer
+        for i in range(self.num_layers):
+            T_t.append(torch.zeros((B, self.num_hidden[i], h_lr, w_lr), device=device, dtype=x.dtype))
+
+        next_frames = []
+        x_gen = None
+        total_steps = Tin + Tout - 1
+
+        for t in range(total_steps):
+            if t < Tin:
+                net = x[:, t]     # (B,1,H,W)
             else:
-                time_diff = t - self.configs.pre_seq_length
-                net = mask_true[:, time_diff] * frames[:, t] + (1 - mask_true[:, time_diff]) * x_gen
+                net = x_gen       # (B,1,H,W)
+
             frames_feature = net
             frames_feature_encoded = []
-            for i in range(len(self.encoders)):
-                frames_feature = self.encoders[i](frames_feature)
+            for enc in self.encoders:
+                frames_feature = enc(frames_feature)
                 frames_feature_encoded.append(frames_feature)
-            if t == 0:
-                for i in range(self.num_layers):
-                    zeros = torch.zeros(
-                        [batch_size, self.num_hidden[i], height, width]).to(device)
-                    T_t.append(zeros)
-            S_t = frames_feature
+
+            S_t = frames_feature  # (B, hidden0, h_lr, w_lr) after encoder
+
             for i in range(self.num_layers):
-                t_att = T_pre[i][-self.tau:]
-                t_att = torch.stack(t_att, dim=0)
-                s_att = S_pre[i][-self.tau:]
-                s_att = torch.stack(s_att, dim=0)
+                t_att = torch.stack(T_pre[i][-self.tau:], dim=0)
+                s_att = torch.stack(S_pre[i][-self.tau:], dim=0)
                 S_pre[i].append(S_t)
+
                 T_t[i], S_t = self.cell_list[i](T_t[i], S_t, t_att, s_att)
                 T_pre[i].append(T_t[i])
+
             out = S_t
+            for k, dec in enumerate(self.decoders):
+                out = dec(out)
+                if self.configs.get("model_mode", "normal") == "recall":
+                    out = out + frames_feature_encoded[-2 - k]
 
-            for i in range(len(self.decoders)):
-                out = self.decoders[i](out)
-                if self.configs.model_mode == 'recall':
-                    out = out + frames_feature_encoded[-2 - i]
-
-            x_gen = self.srcnn(out)
+            x_gen = self.srcnn(out)            # (B,1,H,W)
             next_frames.append(x_gen)
-        
-        # [length, batch, channel, height, width] -> [batch, length, height, width, channel]
-        next_frames = torch.stack(next_frames, dim=0).permute(1, 0, 2, 3, 4).contiguous()
-        if kwargs.get('return_loss', True):
-            loss = self.MSE_criterion(next_frames, frames[:, 1:])
-        else:
-            loss = None
 
-        return next_frames, loss
+        outputs = torch.stack(next_frames, dim=1)                 # (B, Tin+Tout-1, 1, H, W)
+        outputs = outputs[:, Tin-1:Tin-1+Tout].contiguous()       # (B, Tout, 1, H, W)
+        return outputs
+
