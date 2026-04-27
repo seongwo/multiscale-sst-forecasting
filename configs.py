@@ -25,7 +25,7 @@ def get_default_cfg():
         "batch_size": 64,
         "num_workers": 4,
         "max_epoch": 200,
-        "patience": 20,
+        "patience": 30,
         "seed": 42,
         "device": "cuda",
 
@@ -67,28 +67,28 @@ def get_default_cfg():
         # "window_size": 4,
     
 
-        # swinLstm_B parameters 여기서부터 다시 
+        # swinLstm_B parameters
         # "results_csv": "./results/swinLstm_B_results.csv",
         # "exp_name": "swinLstm_B",
         # "in_shape": (14, 1, 32, 32),
         # "num_heads": 4,
-        # "patch_size": 1,
+        # "patch_size": 2,
         # "embed_dim": 128,
         # "window_size": 4,
         # "depths": 3
 
         # predrnn parameters
-        # "results_csv": "./results/predrnn_results.csv",
-        # "exp_name": "predrnn",
-        # "in_shape": (14, 1, 32, 32),
+        "results_csv": "./results/predrnn_results.csv",
+        "exp_name": "predrnn",
+        "in_shape": (14, 1, 32, 32),
 
-        # "patch_size": 1,
-        # "num_layers": 2,
-        # "num_hidden": [32, 32],
+        "patch_size": 1,
+        "num_layers": 3,
+        "num_hidden": [64, 64, 64],
 
-        # "filter_size": 3,
-        # "stride": 1,
-        # "layer_norm": 0,
+        "filter_size": 3,
+        "stride": 1,
+        "layer_norm": 0,
 
         # "reverse_scheduled_sampling": 0,
 
@@ -106,6 +106,22 @@ def get_default_cfg():
         # "filter_size": 3,
         # "stride": 1,
         # "layer_norm": 0,
+
+
+        # predrnnv2
+        # "results_csv": "./results/predrnnv2_results.csv",
+        # "exp_name": "predrnnv2",
+        # "in_shape": (14, 1, 32, 32),
+
+        # "patch_size": 1,
+        # "num_layers": 3,
+        # "num_hidden": [32, 32, 32],
+
+        # "filter_size": 3,
+        # "stride": 1,
+        # "layer_norm": True,
+
+        # "decouple_beta": 0.1,
 
 
 
@@ -254,8 +270,25 @@ def get_default_cfg():
 
 
         ## MSFv3 - concat
-        # "results_csv": "./results/msfgv3_base02_results.csv",
-        # "exp_name": "msfgv3_base02",
+        # "results_csv": "./results/msfg3_gdl03_results.csv",
+        # "exp_name": "msfv3_mean03",
+        # "d_model": 128,
+        # "depth": 4,
+        # "num_heads": 4,
+        # "mlp_ratio": 4.0,
+        # "dropout": 0.0,
+        # "attn_dropout": 0.0,  
+        # "spatial_scales": (2, 4, 8, 16),
+        # "fusion": "sum", 
+        # "image_size": 32,
+        # "time_pool": "last",
+
+        # "lambda_gdl": 0.3,
+
+
+        #MSFv3
+        # "results_csv": "./results/msfv3_ec_f.csv",
+        # "exp_name": "msfv3_ec_f",
         # "d_model": 128,
         # "depth": 4,
         # "num_heads": 4,
@@ -263,27 +296,37 @@ def get_default_cfg():
         # "dropout": 0.0,
         # "attn_dropout": 0.0,
         # "spatial_scales": (2, 4, 8, 16),
-        # "fusion": "gated2", 
+        # "fusion": "sum", 
         # "image_size": 32,
+        # "use_time_emb": True,
+        # "use_scale_emb": True,
+        # "use_pos_emb": False,
 
-        # MSFv3 - concat
-        "results_csv": "./results/msfv3_lk03_results.csv",
-        "exp_name": "msfv3_lk03",
-        "d_model": 128,
-        "depth": 4,
-        "num_heads": 4,
-        "mlp_ratio": 4.0,
-        "dropout": 0.0,
-        "attn_dropout": 0.0,
-        "spatial_scales": (2, 4, 8, 16),
-        "fusion": "sum", 
-        "image_size": 32,
+        # "freeze_time_emb": True,
+        # "freeze_scale_emb": True,
+        # "freeze_pos_emb": False,
 
-        "lambda_gdl": 0.3,
-        "alpha_tgdl": 0.0,
-        "tmse": True,
-        "logistic_k": 1.0,
-        "logistic_midpoint": 3.0,
+        # "use_pad": True,
+        # "time_pool": "last",
+    
+
+        # MSFv3 lk - concat
+        # "results_csv": "./results/msfv3_pgdl03_results.csv",
+        # "exp_name": "msfv3_pgdl03",
+        # "d_model": 128,
+        # "depth": 4,
+        # "num_heads": 4,
+        # "mlp_ratio": 4.0,
+        # "dropout": 0.0,
+        # "attn_dropout": 0.0,
+        # "spatial_scales": (2, 4, 8, 16),
+        # "fusion": "sum", 
+        # "image_size": 32,
+        # "use_pos_emb": True,
+
+        # "lambda_gdl": 0.3,
+        # "alpha_tgdl": 0.0,
+ 
         # [0.0948, 0.2384, 0.5378, 1.0000, 1.4622, 1.7616, 1.9052]
 
         # msfv3_conv
@@ -353,10 +396,10 @@ def get_default_cfg():
 
 
         ## MSFv3 - concat
-        # "results_csv": "./results/msfv3_base03_results.csv",
-        # "exp_name": "msfv3_base03",
+        # "results_csv": "./results/msfv3_depth02_results.csv",
+        # "exp_name": "msfv3_depth02",
         # "d_model": 128,
-        # "depth": 4,
+        # "depth": 2,
         # "num_heads": 4,
         # "mlp_ratio": 4.0,
         # "dropout": 0.0,
@@ -409,7 +452,35 @@ def get_default_cfg():
         # "use_pos_emb": False,
         # "time_pool": "last",
 
+        # MSFv3 encoding
+        # "results_csv": "./results/msfv3_encoding_results.csv",
+        # "exp_name": "msfv3_encoding",
 
+        # "d_model": 128,
+        # "depth": 4,
+        # "num_heads": 4,
+        # "mlp_ratio": 4.0,
+        # "dropout": 0.0,
+        # "attn_dropout": 0.0,
+
+        # "spatial_scales": (2, 4, 8, 16),
+        # "fusion": "sum",          # "sum", "gated", "gated2"
+        # "image_size": 32,
+
+        # "use_pad": True,
+        # "use_pos_emb": False,
+        # "time_pool": "last",
+
+        # "factorize_time_emb": True,
+        # "factorize_scale_emb": True,
+        # "factorize_pos_emb": False,
+
+        # "time_rank": 1,
+        # "scale_rank": 1,
+        # "pos_rank": 1,
+
+        # "lambda_gdl": 0.3,
+        # "alpha_tgdl": 0.0,
 
         # 실험 2) MSFv3 - Scale-head MoE (scale별 future_head를 MoE로)
 
