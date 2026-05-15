@@ -1,0 +1,14 @@
+torch
+torchvision
+numpy
+xarray
+zarr
+pandas
+matplotlib
+scipy
+timm
+einops
+PyWavelets
+tqdm
+jupyter
+ipykernel
