@@ -1,4 +1,4 @@
-# MSFv3 SST Forecasting
+# multiscale-sst-forecasting
 
 This repository contains public release code for sea surface temperature (SST) sequence forecasting experiments associated with an academic paper. The cleanup preserves the original project layout and imports so reviewers can inspect and run the proposed model and baseline training scripts without a package migration.
 
