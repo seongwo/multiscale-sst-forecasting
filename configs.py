@@ -21,10 +21,10 @@ def get_default_cfg():
         "input_len": 14,
         "pred_len": 7,
         "train_start": "1983-01-01",
-        "train_end": "2018-12-31",
-        "val_start": "2019-01-01",
-        "val_end": "2021-12-31",
-        "test_start": "2022-01-01",
+        "train_end": "2015-12-31",
+        "val_start": "2016-01-01",
+        "val_end": "2020-12-31",
+        "test_start": "2021-01-01",
         "test_end": "2025-12-31",
 
         # Runtime and optimization defaults.
