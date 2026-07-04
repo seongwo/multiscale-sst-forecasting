@@ -85,7 +85,7 @@ If checkpoints or prediction arrays are needed for review, publish them as exter
 
 ## Citation
 
-`CITATION.cff` contains placeholder author and repository fields. Update it with the final paper metadata before release.
+Please cite the associated manuscript when using this repository. Full journal citation information will be updated after publication.
 
 ## Manual Notes
 
