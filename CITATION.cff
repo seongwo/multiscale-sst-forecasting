@@ -1,10 +1,12 @@
 cff-version: 1.2.0
 message: "If you use this code, please cite the associated academic paper."
-title: "MSFv3 SST Forecasting"
+title: "Multi-Scale Fusion Spatiotemporal Transformer for Sea Surface Temperature Prediction in the East China Sea"
 authors:
-  - family-names: "TODO"
-    given-names: "TODO"
-date-released: 2026-05-15
+  - family-names: "Lim"
+    given-names: "Seong Woo"
+  - family-names: "Oh"
+    given-names: "Seungwon"
+date-released: 2026-07-04
 version: "0.1.0"
 license: "MIT"
-repository-code: "https://github.com/TODO/TODO"
+repository-code: "https://github.com/seongwo/multiscale-sst-forecasting"
