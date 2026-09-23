@@ -23,3 +23,11 @@ __pycache__/
 output_images_sample_*/
 input_sst_sequence_*/
 scale_outputs_sample_*/
+
+# Local environments and credentials
+.venv/
+.env
+.env.*
+!.env.example
+*.pem
+*.key

@@ -2,6 +2,7 @@ torch
 torchvision
 numpy
 xarray
+dask[array]
 zarr
 pandas
 matplotlib
