@@ -1,6 +1,6 @@
 # MSF-ST · Multi-Scale SST Forecasting
 
-Sea surface temperature prediction in the East China Sea. First-author research by **Seongwoo Lim**.
+Sea surface temperature prediction in the East China Sea. First-author research by **Seong-U IM**.
 
 Sea surface temperature fields contain both broad regional changes and local temperature fronts. I studied whether representing these structures at several spatial scales improves forecasting. MSF-ST combines a multi-scale Transformer with a gradient difference loss, and evaluates the design through baseline comparisons and ablations.
 

@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: "If you use this code, please cite the associated academic paper."
 title: "Multi-Scale Fusion Spatiotemporal Transformer for Sea Surface Temperature Prediction in the East China Sea"
 authors:
-  - family-names: "Lim"
-    given-names: "Seong Woo"
+  - family-names: "IM"
+    given-names: "Seong-U"
   - family-names: "Oh"
     given-names: "Seungwon"
 date-released: 2026-07-04
