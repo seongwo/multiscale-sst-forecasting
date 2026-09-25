@@ -1,25 +1,25 @@
-# MSF-ST: Multi-Scale Fusion Spatiotemporal Transformer
+# MSF-ST · Multi-Scale SST Forecasting
 
-**Sea surface temperature prediction in the East China Sea · First-author research by Seong Woo Lim**
+Sea surface temperature prediction in the East China Sea. First-author research by **Seongwoo Lim**.
 
-SST fields contain both broad regional changes and local temperature fronts. This project asks whether representing these structures at multiple spatial scales improves forecasting over a single fixed scale. It connects a spatial-structure hypothesis to a Transformer architecture, gradient-based training objective, and baseline and ablation experiments.
+Sea surface temperature fields contain both broad regional changes and local temperature fronts. I studied whether representing these structures at several spatial scales improves forecasting. MSF-ST combines a multi-scale Transformer with a gradient difference loss, and evaluates the design through baseline comparisons and ablations.
 
 The implementation retains the research name `MSFv3` in Python classes and filenames. **MSF-ST** is the manuscript/project name.
 
-## Research at a glance
+## Method
 
 - **Task:** forecast 7 daily SST fields from 14 past observations on a 32 × 32 regional grid.
 - **Representation:** patch tokenization at spatial scales 2, 4, 8, and 16, with time and scale embeddings.
 - **Architecture:** concatenate tokens across scales, apply factorized spatial/temporal attention, decode forecasts per scale, then fuse and refine them.
 - **Objective:** ocean-masked MSE plus spatial Gradient Difference Loss (GDL); the reported setting uses a GDL coefficient of 0.3.
 - **Evaluation:** comparisons with statistical and neural baselines, scale/component ablations, and spatial error analysis.
-- **Role:** first author. The repository also contains third-party baseline implementations; those methods are not claimed as original contributions.
+- **Contribution:** MSF-ST model and experiments. Baseline implementations are credited in [THIRD_PARTY.md](THIRD_PARTY.md).
 
 [Architecture figure](figures/architecture.pdf) · [Implementation guide](docs/method.md) · [Experiment evidence](docs/experiment_record.md)
 
-## Reported result and release status
+## Results
 
-| MSF-ST result reported by the author | Value |
+| Reported MSF-ST result | Value |
 |---|---:|
 | RMSE | 0.5295 °C |
 | MAE | approximately 0.3693–0.3694 °C |
@@ -27,7 +27,7 @@ The implementation retains the research name `MSFv3` in Python classes and filen
 
 A check of the available archived predictions reproduces RMSE 0.5295 °C and MAE 0.3694 °C after rounding. It gives MAPE 1.7130%, slightly different from the reported value. The [experiment record](docs/experiment_record.md) preserves both, identifies the artifacts and normalization used, and records what remains unresolved.
 
-**This release supports code inspection and synthetic forward checks. Full reproduction of the reported experiment still needs the matching checkpoint/configuration, preprocessing recipe, and final evaluation manifest.** In particular, the current default selects `gated2` fusion; it is not established as the configuration that produced the reported result. The training CSV contains metrics on normalized data, which should not be read as the table above.
+The code and a data-free forward example are available. Reproducing the result table still requires the matching checkpoint, configuration, preprocessing record, and evaluation manifest. The current `gated2` default has not been matched to the reported run. Training CSV metrics are computed on normalized data; the table above uses °C. [Reproduction notes](docs/reproducibility.md) describe these differences.
 
 ## Quickstart without SST data
 
