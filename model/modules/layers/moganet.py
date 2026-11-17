@@ -1,3 +1,4 @@
+# Adapted from MogaNet for SST forecasting; see THIRD_PARTY.md and licenses/MogaNet.txt.
 # refer to the code from MogaNet, Thanks!
 # https://github.com/Westlake-AI/MogaNet/blob/main/models/moganet.py
 

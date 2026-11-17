@@ -1,3 +1,4 @@
+# Adapted from OpenSTL for SST forecasting; see THIRD_PARTY.md and licenses/OpenSTL.txt.
 import torch
 import torch.nn as nn
 

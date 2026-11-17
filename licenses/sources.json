@@ -1,0 +1,44 @@
+[
+  {
+    "component": "OpenSTL",
+    "repository": "https://github.com/chengtan9907/OpenSTL",
+    "license": "Apache-2.0",
+    "license_source": "https://github.com/chengtan9907/OpenSTL/blob/OpenSTL-Lightning/LICENSE",
+    "license_git_blob": "2455b74a3226b13fedfe00303249eea51faad974"
+  },
+  {
+    "component": "HorNet",
+    "repository": "https://github.com/raoyongming/HorNet",
+    "license": "MIT",
+    "license_source": "https://github.com/raoyongming/HorNet/blob/master/LICENSE",
+    "license_git_blob": "a63885c9a8d9747749e7ec81b2b7a1f08fae1750"
+  },
+  {
+    "component": "MogaNet",
+    "repository": "https://github.com/Westlake-AI/MogaNet",
+    "license": "Apache-2.0",
+    "license_source": "https://github.com/Westlake-AI/MogaNet/blob/main/LICENSE",
+    "license_git_blob": "2455b74a3226b13fedfe00303249eea51faad974"
+  },
+  {
+    "component": "PoolFormer",
+    "repository": "https://github.com/sail-sg/poolformer",
+    "license": "Apache-2.0",
+    "license_source": "https://github.com/sail-sg/poolformer/blob/main/LICENSE",
+    "license_git_blob": "1a0e0506e71b4fee5aea36b5352840195ef6f22f"
+  },
+  {
+    "component": "UniFormer",
+    "repository": "https://github.com/Sense-X/UniFormer",
+    "license": "Apache-2.0",
+    "license_source": "https://github.com/Sense-X/UniFormer/blob/main/LICENSE",
+    "license_git_blob": "6cf2d94f4c0b277e024208af2ae7503e81cf9a1c"
+  },
+  {
+    "component": "VAN",
+    "repository": "https://github.com/Visual-Attention-Network/VAN-Classification",
+    "license": "Apache-2.0",
+    "license_source": "https://github.com/Visual-Attention-Network/VAN-Classification/blob/main/LICENSE",
+    "license_git_blob": "1a0e0506e71b4fee5aea36b5352840195ef6f22f"
+  }
+]

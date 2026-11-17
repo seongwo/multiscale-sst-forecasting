@@ -1,0 +1,16 @@
+{
+  "record_type": "manuscript_reported_results",
+  "source": "MSF-ST revised manuscript ENVSOFT-D-26-02230R1 and reviewer response",
+  "tables": {
+    "overall.csv": "Table 2",
+    "five_seed_summary.csv": "Table 3",
+    "seasonal.csv": "Table 4",
+    "scale_configurations.csv": "Table 5",
+    "embedding.csv": "Table 6",
+    "refinement_gdl.csv": "Table 7",
+    "spatial_pe_seed42.csv": "Reviewer 2 Comment 1 response"
+  },
+  "precision": "Reported manuscript precision retained; sd_display_c is the displayed truncated SD. Confidence intervals and adjusted p values are transcribed as reported.",
+  "aggregation": "Main repeated-run comparisons use independent training seeds42-46. Single-run overall comparison uses seed42.",
+  "source_pdf_sha256": "930510d4af7e46af717b5c09eaeb8a5ce704a71f5e16c852ee39d688829894a9"
+}

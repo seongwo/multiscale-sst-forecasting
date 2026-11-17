@@ -11,10 +11,10 @@ def get_default_cfg():
         # Local data placeholders. See docs/data_preparation.md.
         "data_path": "./data/oisst_ecs_2533_122130.zarr",
         "mask_path": "./data/oisst_spatial_mask_ecs.npy",
-        "stats_cache": "./checkpoints/train_stats.json",
+        "stats_cache": "./checkpoints/msf_st_full4_gdl05_seed42_stats.json",
         "ckpt_dir": "./checkpoints",
         "results_dir": "./results",
-        "results_csv": "./results/msfv3_default_results.csv",
+        "results_csv": "./results/msf_st_full4_gdl05_seed42_results.csv",
         "var_name": "sst",
 
         # Sequence and split settings used by the paper experiments.
@@ -37,19 +37,23 @@ def get_default_cfg():
         "lr": 1e-4,
         "weight_decay": 0.0,
         "eps_mape": 1e-3,
+        "deterministic_algorithms": True,
+        "train_drop_last": True,
+        "val_test_drop_last": False,
+        "evaluation_aggregation": "global",
 
-        # Loss options. The paper's main MSFv3 setting uses lambda_gdl=0.3.
+        # Main revision setting: masked MSE + 0.5 * spatial GDL.
         # Set lambda_gdl=0.0 for the MSFv3-base ablation.
         "tmse": False,
         "logistic_k": 1.0,
         "logistic_midpoint": None,
-        "lambda_gdl": 0.3,
+        "lambda_gdl": 0.5,
         "alpha_tgdl": 0.0,
         "aux_coef": 0.0,
         "moe_monitor": False,
 
         # Proposed MSFv3 model defaults.
-        "exp_name": "msfv3_default",
+        "exp_name": "msf_st_full4_gdl05_seed42",
         "image_size": 32,
         "d_model": 128,
         "depth": 4,
@@ -58,7 +62,7 @@ def get_default_cfg():
         "dropout": 0.0,
         "attn_dropout": 0.0,
         "spatial_scales": (2, 4, 8, 16),
-        "fusion": "gated2",
+        "fusion": "sum",
         "time_pool": "last",
         "use_pad": True,
         "use_pos_emb": False,

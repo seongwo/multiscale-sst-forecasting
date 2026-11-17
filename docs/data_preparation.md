@@ -14,7 +14,7 @@ The default configuration uses:
 `build_datasets.open_oisst` uses `xarray.open_zarr` for a `.zarr` path and `xarray.open_dataset` otherwise. The default Zarr loading uses Dask; `dask[array]` is included in the requirements. Other formats may require a compatible xarray backend.
 
 | Field | Contract |
-|---|---|
+| --- | --- |
 | `sst` | Daily SST in physical units before normalization, ordered `(time, lat, lon)` |
 | Spatial grid | Default experiments use 32 × 32 cells; data and mask must have identical coordinate order |
 | Ocean mask | NumPy array `(lat, lon)`, boolean-compatible; `True` means valid ocean |
@@ -28,12 +28,20 @@ The dataset zeros masked land cells after normalization. Although the mean/std c
 The current `configs.py` and `build_datasets.py` defaults agree:
 
 | Split | Inclusive interval |
-|---|---|
+| --- | --- |
 | Training | 1983-01-01 through 2015-12-31 |
 | Validation | 2016-01-01 through 2020-12-31 |
 | Test | 2021-01-01 through 2025-12-31 |
 
-Windows are created separately inside each split, with 14 inputs followed by 7 targets. They do not cross split boundaries. A split containing `T` daily records produces `T - 14 - 7 + 1` candidate windows before the trainer drops incomplete batches.
+Windows are created separately inside each split, with 14 inputs followed by 7 targets. They do not cross split boundaries. A split containing `T` daily records produces `T-14-7+1` windows. For the saved revision dataset:
+
+| Split | Daily fields | Complete windows |
+| --- | ---: | ---: |
+| Training | 12,053 | 12,033 |
+| Validation | 1,827 | 1,807 |
+| Test | 1,826 | 1,806 |
+
+Training drops a final incomplete batch. Validation and Test use every complete window, including the final smaller batch. The saved training-ocean mean/std are 22.508429888017154°C and 4.889253383831301°C; the mask contains 1,021 ocean cells and 989 horizontal/988 vertical valid edges. The [data manifest](results/data_manifest.json) includes the prepared-array hashes. These constants identify the saved dataset; recompute training statistics when preparing a different dataset.
 
 Mean and standard deviation are calculated from valid training ocean observations only, then reused for all splits. `stats_cache` is written each time datasets are built; it is not read as a validated immutable cache. Preserve it alongside the configuration and preprocessing metadata for each run.
 

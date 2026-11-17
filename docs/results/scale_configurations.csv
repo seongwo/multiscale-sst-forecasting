@@ -1,0 +1,10 @@
+configuration,scales,validation_rmse_c,test_rmse_c
+Single-scale,2,0.6410,0.5462
+Single-scale,4,0.6303,0.5428
+Single-scale,8,0.6408,0.5439
+Single-scale,16,0.6646,0.5598
+LOSO,4;8;16,0.6356,0.5433
+LOSO,2;8;16,0.6293,0.5432
+LOSO,2;4;16,0.6312,0.5440
+LOSO,2;4;8,0.6393,0.5469
+Full Model,2;4;8;16,0.6216,0.5265

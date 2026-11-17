@@ -1,0 +1,120 @@
+{
+  "model": "Earthformer_selected_LR",
+  "record_type": "saved_experiment_configuration",
+  "settings": {
+    "run_id": "rev20261025_earthformer_OO_seed43",
+    "seed": 43,
+    "tin": 14,
+    "tout": 7,
+    "image_size": 32,
+    "d_model": 64,
+    "depth": 1,
+    "num_heads": 4,
+    "mlp_ratio": 4.0,
+    "dropout": 0.0,
+    "attn_dropout": 0.0,
+    "spatial_scales": [],
+    "fusion": "sum",
+    "use_pad": true,
+    "use_pos_emb": false,
+    "time_pool": "last",
+    "batch_size": 64,
+    "num_workers": 4,
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "max_epoch": 200,
+    "patience": 20,
+    "lambda_gdl": 0.0,
+    "precision": "float32; AMP off; TF32 off",
+    "deterministic_algorithms": true,
+    "selection_metric": "validation global masked RMSE; full population",
+    "train_drop_last": true,
+    "val_test_drop_last": false,
+    "family": "earthformer_masked_mse",
+    "baseline_kind": "earthformer",
+    "objective": "masked_mse",
+    "architecture": {
+      "input_shape": [
+        14,
+        32,
+        32,
+        1
+      ],
+      "target_shape": [
+        7,
+        32,
+        32,
+        1
+      ],
+      "base_units": 64,
+      "scale_alpha": 1.0,
+      "enc_depth": [
+        1,
+        1
+      ],
+      "dec_depth": [
+        1,
+        1
+      ],
+      "enc_use_inter_ffn": true,
+      "dec_use_inter_ffn": true,
+      "dec_hierarchical_pos_embed": false,
+      "downsample": 2,
+      "downsample_type": "patch_merge",
+      "upsample_type": "upsample",
+      "num_global_vectors": 0,
+      "use_dec_self_global": false,
+      "dec_self_update_global": true,
+      "use_dec_cross_global": false,
+      "use_global_vector_ffn": false,
+      "use_global_self_attn": false,
+      "separate_global_qkv": false,
+      "global_dim_ratio": 1,
+      "dec_cross_last_n_frames": null,
+      "attn_drop": 0.1,
+      "proj_drop": 0.1,
+      "ffn_drop": 0.1,
+      "num_heads": 4,
+      "ffn_activation": "gelu",
+      "gated_ffn": false,
+      "norm_layer": "layer_norm",
+      "padding_type": "zeros",
+      "pos_embed_type": "t+h+w",
+      "use_relative_pos": true,
+      "self_attn_use_final_proj": true,
+      "dec_use_first_self_attn": false,
+      "z_init_method": "zeros",
+      "initial_downsample_type": "conv",
+      "initial_downsample_activation": "leaky",
+      "initial_downsample_scale": [
+        1,
+        1,
+        2
+      ],
+      "initial_downsample_conv_layers": 2,
+      "final_upsample_conv_layers": 1,
+      "checkpoint_level": 0,
+      "attn_linear_init_mode": "0",
+      "ffn_linear_init_mode": "0",
+      "conv_init_mode": "0",
+      "down_up_linear_init_mode": "0",
+      "norm_init_mode": "0",
+      "enc_attn_patterns": [
+        "axial",
+        "axial"
+      ],
+      "dec_self_attn_patterns": [
+        "axial",
+        "axial"
+      ],
+      "dec_cross_attn_patterns": [
+        "cross_1x1",
+        "cross_1x1"
+      ]
+    },
+    "training_family": "Earthformer_selected_LR",
+    "reference_config": "seed42.json",
+    "spatial_enabled": true,
+    "temporal_enabled": true
+  }
+}

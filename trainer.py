@@ -4,7 +4,7 @@ import random
 
 import numpy as np
 import torch
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, RandomSampler
 
 from losses import (
     masked_gdl,
@@ -114,7 +114,8 @@ def _gradient_loss(pred, target, mask_hw, lambda_gdl: float, alpha_tgdl: float):
     return lambda_gdl * masked_gdl(pred, target, mask_hw)
 
 
-def _base_losses(pred, target, mask_hw, use_tmse, logistic_k, logistic_midpoint):
+def _base_losses(pred, target, mask_hw, use_tmse, logistic_k, logistic_midpoint,
+                 objective="masked_mse"):
     mse_metric = masked_mse(pred, target, mask_hw)
     tmse_metric = masked_logistic_temporal_mse(
         pred,
@@ -124,7 +125,12 @@ def _base_losses(pred, target, mask_hw, use_tmse, logistic_k, logistic_midpoint)
         k=logistic_k,
         midpoint=logistic_midpoint,
     )
-    base_loss = tmse_metric if use_tmse else mse_metric
+    if objective not in {"masked_mse", "masked_l1"}:
+        raise ValueError("objective must be 'masked_mse' or 'masked_l1'")
+    if use_tmse and objective != "masked_mse":
+        raise ValueError("Temporal MSE cannot be combined with an L1 objective")
+    base_loss = (masked_mae(pred, target, mask_hw) if objective == "masked_l1"
+                 else tmse_metric if use_tmse else mse_metric)
     return base_loss, mse_metric, tmse_metric
 
 
@@ -140,6 +146,56 @@ def _empty_metric_sums():
         "gradient_loss": 0.0,
         "aux_loss": 0.0,
     }
+
+
+class GlobalMetrics:
+    """Accumulate all ocean targets, including a smaller final batch."""
+
+    def __init__(self, mask_hw, eps_mape):
+        self.mask = mask_hw.bool()
+        if not self.mask.any():
+            raise ValueError("The ocean mask is empty")
+        self.eps_mape = eps_mape
+        self.samples = 0
+        self.count_per_lead = 0
+        self.sse = self.sae = self.ape = self.target_sum = self.target_square = None
+
+    @torch.no_grad()
+    def update(self, pred, target):
+        p = pred[..., self.mask].double()
+        y = target[..., self.mask].double()
+        if not torch.isfinite(p).all() or not torch.isfinite(y).all():
+            raise ValueError("Non-finite ocean prediction or target")
+        delta = (pred - target)[..., self.mask].double()
+        values = (
+            delta.square().sum((0, 2, 3)),
+            delta.abs().sum((0, 2, 3)),
+            (delta.abs() / y.abs().clamp_min(self.eps_mape)).sum((0, 2, 3)),
+            y.sum((0, 2, 3)),
+            y.square().sum((0, 2, 3)),
+        )
+        for name, value in zip(("sse", "sae", "ape", "target_sum", "target_square"), values):
+            previous = getattr(self, name)
+            setattr(self, name, value if previous is None else previous + value)
+        self.samples += len(pred)
+        self.count_per_lead += p.shape[0] * p.shape[2] * p.shape[3]
+
+    def finish(self):
+        if not self.samples:
+            raise ValueError("Evaluation loader produced no samples")
+        count = self.count_per_lead * len(self.sse)
+        mse_t = self.sse / self.count_per_lead
+        target_sst = self.target_square.sum() - self.target_sum.sum().square() / count
+        return {
+            "samples": self.samples,
+            "mse": float(mse_t.mean()),
+            "rmse": float(mse_t.mean().sqrt()),
+            "mae": float(self.sae.sum() / count),
+            "mape": float(100 * self.ape.sum() / count),
+            "r2": float(1 - self.sse.sum() / target_sst.clamp_min(1e-8)),
+            "rmse_t": mse_t.sqrt().tolist(),
+            "mae_t": (self.sae / self.count_per_lead).tolist(),
+        }
 
 
 def _update_moe_accumulators(model, device, acc):
@@ -202,12 +258,17 @@ def eval_epoch(
     use_tmse: bool = False,
     logistic_k: float = 1.0,
     logistic_midpoint=None,
+    aggregation: str = "batch_mean",
+    objective: str = "masked_mse",
 ):
     model.eval()
     sums = _empty_metric_sums()
     rmse_t_sum = None
     mae_t_sum = None
     n = 0
+    if aggregation not in {"batch_mean", "global"}:
+        raise ValueError("aggregation must be 'batch_mean' or 'global'")
+    global_metrics = GlobalMetrics(mask_hw, eps_mape) if aggregation == "global" else None
 
     moe_acc = {
         "all_sum": None,
@@ -230,9 +291,11 @@ def eval_epoch(
             return_aux_loss=model_return_aux_loss,
         )
         pred = ensure_pred_5d(pred, y)
+        if global_metrics is not None:
+            global_metrics.update(pred, y)
 
         base_loss, mse_metric, tmse_metric = _base_losses(
-            pred, y, mask_hw, use_tmse, logistic_k, logistic_midpoint
+            pred, y, mask_hw, use_tmse, logistic_k, logistic_midpoint, objective
         )
         gradient_loss = _gradient_loss(pred, y, mask_hw, lambda_gdl, alpha_tgdl)
         total_loss = base_loss + gradient_loss + aux_coef * aux_raw
@@ -263,6 +326,8 @@ def eval_epoch(
     sums["rmse_t"] = (rmse_t_sum / max(n, 1)).tolist() if rmse_t_sum is not None else None
     sums["mae_t"] = (mae_t_sum / max(n, 1)).tolist() if mae_t_sum is not None else None
     sums["moe_stats"] = _finalize_moe_stats(moe_acc) if moe_monitor else None
+    if global_metrics is not None:
+        sums.update(global_metrics.finish())
     return sums
 
 
@@ -293,12 +358,15 @@ def train(model, train_set, val_set, test_set, mask_hw: torch.Tensor, cfg: dict,
     logistic_midpoint = cfg.get("logistic_midpoint", None)
 
     pin_memory = bool(use_cuda)
+    sampler_generator = torch.Generator().manual_seed(int(cfg.get("seed", 42)))
+    train_sampler = RandomSampler(train_set, generator=sampler_generator)
     train_loader = DataLoader(
         train_set,
         batch_size=batch_size,
-        shuffle=True,
+        sampler=train_sampler,
         num_workers=num_workers,
-        drop_last=True,
+        drop_last=bool(cfg.get("train_drop_last", True)),
+        generator=torch.Generator().manual_seed(int(cfg.get("seed", 42))),
         pin_memory=pin_memory,
         persistent_workers=(num_workers > 0),
     )
@@ -307,7 +375,7 @@ def train(model, train_set, val_set, test_set, mask_hw: torch.Tensor, cfg: dict,
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        drop_last=True,
+        drop_last=bool(cfg.get("val_test_drop_last", True)),
         pin_memory=pin_memory,
         persistent_workers=(num_workers > 0),
     )
@@ -316,7 +384,7 @@ def train(model, train_set, val_set, test_set, mask_hw: torch.Tensor, cfg: dict,
         batch_size=batch_size,
         shuffle=False,
         num_workers=num_workers,
-        drop_last=True,
+        drop_last=bool(cfg.get("val_test_drop_last", True)),
         pin_memory=pin_memory,
         persistent_workers=(num_workers > 0),
     )
@@ -353,7 +421,8 @@ def train(model, train_set, val_set, test_set, mask_hw: torch.Tensor, cfg: dict,
             pred = ensure_pred_5d(pred, y)
 
             base_loss, mse_metric, tmse_metric = _base_losses(
-                pred, y, mask_hw, use_tmse, logistic_k, logistic_midpoint
+                pred, y, mask_hw, use_tmse, logistic_k, logistic_midpoint,
+                cfg.get("objective", "masked_mse")
             )
             gradient_loss = _gradient_loss(pred, y, mask_hw, lambda_gdl, alpha_tgdl)
             train_loss = base_loss + gradient_loss + aux_coef * aux_raw
@@ -399,6 +468,8 @@ def train(model, train_set, val_set, test_set, mask_hw: torch.Tensor, cfg: dict,
             use_tmse=use_tmse,
             logistic_k=logistic_k,
             logistic_midpoint=logistic_midpoint,
+            aggregation=cfg.get("evaluation_aggregation", "batch_mean"),
+            objective=cfg.get("objective", "masked_mse"),
         )
 
         is_best = float(val_sums["rmse"]) < best_val_rmse
@@ -460,6 +531,7 @@ def train(model, train_set, val_set, test_set, mask_hw: torch.Tensor, cfg: dict,
                     "cfg": cfg,
                     "best_val_rmse": best_val_rmse,
                     "best_epoch": best_epoch,
+                    "selection_metric": cfg.get("evaluation_aggregation", "batch_mean") + " masked validation RMSE (normalized)",
                 },
                 ckpt_path,
             )
@@ -487,6 +559,8 @@ def train(model, train_set, val_set, test_set, mask_hw: torch.Tensor, cfg: dict,
         use_tmse=use_tmse,
         logistic_k=logistic_k,
         logistic_midpoint=logistic_midpoint,
+        aggregation=cfg.get("evaluation_aggregation", "batch_mean"),
+        objective=cfg.get("objective", "masked_mse"),
     )
 
     print(

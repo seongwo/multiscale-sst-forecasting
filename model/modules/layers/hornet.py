@@ -1,3 +1,4 @@
+# Adapted from HorNet for SST forecasting; see THIRD_PARTY.md and licenses/HorNet.txt.
 # refer to the code from HorNet, Thanks!
 # https://github.com/raoyongming/HorNet
 

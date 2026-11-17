@@ -1,0 +1,37 @@
+{
+  "model": "Single4_D152",
+  "record_type": "saved_experiment_configuration",
+  "settings": {
+    "run_id": "rev20261014_single4_d152_seed42",
+    "seed": 42,
+    "tin": 14,
+    "tout": 7,
+    "image_size": 32,
+    "d_model": 152,
+    "depth": 4,
+    "num_heads": 4,
+    "mlp_ratio": 4.0,
+    "dropout": 0.0,
+    "attn_dropout": 0.0,
+    "spatial_scales": [
+      4
+    ],
+    "fusion": "sum",
+    "use_pad": true,
+    "use_pos_emb": false,
+    "time_pool": "last",
+    "batch_size": 64,
+    "num_workers": 4,
+    "lr": 0.0001,
+    "weight_decay": 0.0,
+    "max_epoch": 200,
+    "patience": 20,
+    "lambda_gdl": 0.5,
+    "precision": "float32; AMP off; TF32 off",
+    "deterministic_algorithms": true,
+    "selection_metric": "validation global masked RMSE; full population",
+    "train_drop_last": true,
+    "val_test_drop_last": false,
+    "spatial_attention": "full"
+  }
+}

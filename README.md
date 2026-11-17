@@ -1,6 +1,6 @@
 # MSF-ST · Multi-Scale SST Forecasting
 
-Sea surface temperature prediction in the East China Sea. First-author research by **Seong-U IM**.
+Sea surface temperature prediction in the East China Sea. First-author research by **Seong Woo Lim**.
 
 Sea surface temperature fields contain both broad regional changes and local temperature fronts. I studied whether representing these structures at several spatial scales improves forecasting. MSF-ST combines a multi-scale Transformer with a gradient difference loss, and evaluates the design through baseline comparisons and ablations.
 
@@ -11,7 +11,7 @@ The implementation retains the research name `MSFv3` in Python classes and filen
 - **Task:** forecast 7 daily SST fields from 14 past observations on a 32 × 32 regional grid.
 - **Representation:** patch tokenization at spatial scales 2, 4, 8, and 16, with time and scale embeddings.
 - **Architecture:** concatenate tokens across scales, apply factorized spatial/temporal attention, decode forecasts per scale, then fuse and refine them.
-- **Objective:** ocean-masked MSE plus spatial Gradient Difference Loss (GDL); the reported setting uses a GDL coefficient of 0.3.
+- **Objective:** ocean-masked MSE plus spatial Gradient Difference Loss (GDL), with a coefficient of 0.5 in the current revision experiments.
 - **Evaluation:** comparisons with statistical and neural baselines, scale/component ablations, and spatial error analysis.
 - **Contribution:** MSF-ST model and experiments. Baseline implementations are credited in [THIRD_PARTY.md](THIRD_PARTY.md).
 
@@ -19,15 +19,16 @@ The implementation retains the research name `MSFv3` in Python classes and filen
 
 ## Results
 
-| Reported MSF-ST result | Value |
-|---|---:|
-| RMSE | 0.5295 °C |
-| MAE | approximately 0.3693–0.3694 °C |
+| MSF-ST, manuscript Table 2 (Seed 42) | Value |
+| --- | ---: |
+| RMSE | 0.5265 °C |
+| MAE | 0.3663 °C |
 | MAPE | 1.7132% |
+| GDL | 0.1797 °C/grid edge |
 
-A check of the available archived predictions reproduces RMSE 0.5295 °C and MAE 0.3694 °C after rounding. It gives MAPE 1.7130%, slightly different from the reported value. The [experiment record](docs/experiment_record.md) preserves both, identifies the artifacts and normalization used, and records what remains unresolved.
+These values are reported in manuscript Table 2. The five-seed mean RMSE is **0.5334 °C** (Table 3). [Manuscript tables](docs/results/README.md) include the overall, statistical, seasonal and ablation results at their published precision; [model configurations](docs/run_configs/MSF_ST/seed42.json) describe the architecture and training settings.
 
-The code and a data-free forward example are available. Reproducing the result table still requires the matching checkpoint, configuration, preprocessing record, and evaluation manifest. The current `gated2` default has not been matched to the reported run. Training CSV metrics are computed on normalized data; the table above uses °C. [Reproduction notes](docs/reproducibility.md) describe these differences.
+The default model uses four scales, sum fusion, and learned time/scale embeddings, with explicit spatial positional embeddings disabled. [Experiment details](docs/experiment_record.md) explain the saved evaluation scope, baseline settings, and additional embedding comparison.
 
 ## Quickstart without SST data
 
@@ -58,27 +59,51 @@ This is a randomly initialized, reduced-size shape check. It does not evaluate f
 ## Training with prepared data
 
 1. Prepare the SST store and ocean mask using the [data contract](docs/data_preparation.md).
-2. Review `configs.py`, including fusion, device, data paths, split dates, and output names. Use `device="cpu"` if CUDA is unavailable.
+2. Review `configs.py`: 14 input days, 7 forecast days, sum fusion and GDL 0.5. Choose data paths and an output location.
 3. Start the proposed-model entry point from the repository root:
 
 ```bash
-python -m model_train.base.msf3_train
+python -m model_train.base.msf3_train --seed 42 --device cuda --output-root ./outputs/seed42
 ```
 
-Use a distinct `exp_name`, `results_csv`, and normalization statistics path for each experiment so existing artifacts are not overwritten or mixed. Model and optimizer behavior are preserved from the research code.
+Use `--print-config` to inspect settings without loading data, or `--device cpu` for a CPU run. Each seed gets distinct checkpoint, normalization and CSV names under the selected output root. Validation and Test retain the final smaller batch; validation selection uses global ocean-cell RMSE. Training CSV errors are in normalized units; the result table above uses physical units.
 
-Baseline entry points are in `model_train/base/`. Some require model-specific fields absent from the proposed-model default, so they are not all ready to run with an unchanged `configs.py`. See [baseline configuration notes](docs/reproducibility.md#baseline-entry-points) before running them. Statistical baseline evaluation and the full ablation runners are not included in this release.
+For saved normalized predictions, evaluate all samples in °C:
+
+```bash
+python -m model_train.base.evaluate_predictions \
+  --predictions /path/to/test_predictions_normalized.npy \
+  --targets /path/to/test_ground_truth_normalized.npy \
+  --mask /path/to/ocean_mask.npy \
+  --metadata docs/results/data_manifest.json
+```
+
+The evaluator checks the expected 1,806 samples, includes every final batch, and reports RMSE, MAE, MAPE and gradient magnitude error. Use matching arrays and normalization metadata from the same experiment. Data/checkpoints/predictions must be supplied separately.
+
+Additional comparison models have a configuration-driven entry point:
+
+```bash
+python -m model_train.base.baseline_train --model earthformer --seed 42 --check-model --device cpu
+python -m model_train.base.baseline_train --model piformer --seed 42 --piformer-root ./external/PiFormer
+python -m model_train.base.baseline_train --model vit_gru --seed 42
+python -m model_train.base.baseline_train --model single_scale --seed 42
+```
+
+PiFormer loads the pinned official source from a separate checkout; see [additional model setup](docs/additional_models.md). Each family uses its own objective and learning rate. Existing recurrent and SimVP entry points retain their paths; see [baseline configuration notes](docs/reproducibility.md#baseline-entry-points).
 
 ## Repository map
 
 | Path | Purpose |
-|---|---|
+| --- | --- |
 | `model/models/msf3_model.py` | Multi-scale tokenization, factorized attention, per-scale decoding, fusion |
 | `losses.py` | Ocean-masked metrics and spatial/temporal GDL variants |
 | `dataset.py`, `build_datasets.py` | Chronological splits, training-set normalization, sliding windows |
-| `trainer.py` | Training, validation selection, checkpointing, normalized metrics |
+| `trainer.py` | Training, full-population validation selection, checkpointing and normalized diagnostics |
 | `model_train/base/` | Proposed-model and neural baseline entry points |
+| `model_train/base/baseline_train.py` | Paper presets for PiFormer, Earthformer, ViT-GRU and Single-scale |
+| `model_train/base/evaluate_predictions.py` | Physical-unit evaluation of saved prediction arrays |
 | `docs/` | Method, data contract, evidence, and reproducibility limits |
+| `docs/results/`, `docs/run_configs/` | Manuscript result tables and per-seed model configurations |
 | `figures/` | Selected research figures; [index](figures/README.md) |
 
 Data, checkpoints, prediction arrays, and generated outputs are excluded from the current release tree. Older experimental branches may still contain large artifacts; the clean release tree does not remove those branches or their history.

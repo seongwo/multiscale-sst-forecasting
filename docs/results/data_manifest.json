@@ -1,0 +1,96 @@
+{
+  "mean": 22.508429888017154,
+  "std": 4.889253383831301,
+  "mask_cells": 1021,
+  "edge_cells_x": 989,
+  "edge_cells_y": 988,
+  "splits": {
+    "train": {
+      "days": 12053,
+      "samples": 12033,
+      "start": "1983-01-01",
+      "end": "2015-12-31"
+    },
+    "val": {
+      "days": 1827,
+      "samples": 1807,
+      "start": "2016-01-01",
+      "end": "2020-12-31"
+    },
+    "test": {
+      "days": 1826,
+      "samples": 1806,
+      "start": "2021-01-01",
+      "end": "2025-12-31"
+    }
+  },
+  "normalization": "train ocean population mean/std; float32 inputs",
+  "evaluation": "full windows; global ocean-cell SSE/count; lead-specific; no drop_last",
+  "files": [
+    {
+      "file": "ocean_mask.npy",
+      "bytes": 1152,
+      "sha256": "dafd4540f1691d4a50b85d5774b150e1eaa2916bead3c559ff3683e7c4fb5af2"
+    },
+    {
+      "file": "test_dates.npy",
+      "bytes": 14736,
+      "sha256": "70a2e93647d20c3522db6c1d1d2220b984914a760fb52b8efb08b1211358d897"
+    },
+    {
+      "file": "test_ground_truth_normalized.npy",
+      "bytes": 51781760,
+      "sha256": "69f66864ccf8ca5201cf2e17b57280a4147203cf0c098be0bb253e784e915028"
+    },
+    {
+      "file": "test_normalized.npy",
+      "bytes": 7479424,
+      "sha256": "f5db85537e1cb99ada39d9ce820ca4468e5aa6e2b1a1990105076dd392301d3a"
+    },
+    {
+      "file": "test_origin_dates.npy",
+      "bytes": 14576,
+      "sha256": "b35fc99e25ed737e72924fec0f267e13cdf897cd47f01e2a24033732e70ed6c8"
+    },
+    {
+      "file": "test_target_dates.npy",
+      "bytes": 101264,
+      "sha256": "2ad64109aef78f3791ac8ce71e7181db9afcad1de4e98819c00757a5174810e0"
+    },
+    {
+      "file": "train_dates.npy",
+      "bytes": 96552,
+      "sha256": "0981a75dae4788208a5ba6be62df7536329726985a3af2c62898f7f3a124ac06"
+    },
+    {
+      "file": "train_normalized.npy",
+      "bytes": 49369216,
+      "sha256": "b63367cf69b45cc0c5ea0346fad9018e279f80911ef75b1e9a029bdf0307582d"
+    },
+    {
+      "file": "val_dates.npy",
+      "bytes": 14744,
+      "sha256": "8c3bb9753a91b3ae2219b4cf25ad9b08faabf4deecc94f04dd708e752b2c760b"
+    },
+    {
+      "file": "val_ground_truth_normalized.npy",
+      "bytes": 51810432,
+      "sha256": "7d9303ef8397cc27419bbf277682e75cfd1f485fd258c55c9b1cc71b995453cd"
+    },
+    {
+      "file": "val_normalized.npy",
+      "bytes": 7483520,
+      "sha256": "f61d23b09dc541b60dd5132904f2419792b3e730deec048bae51396b38bbf89d"
+    },
+    {
+      "file": "val_origin_dates.npy",
+      "bytes": 14584,
+      "sha256": "25a1bf832cb08e5f5d51b22530ff9a00ec284a6ba5356a3df5ea3bd05db60f95"
+    },
+    {
+      "file": "val_target_dates.npy",
+      "bytes": 101320,
+      "sha256": "ca03197db1aa5329b7f5cf6e29f3ab8a6c360f022ff63911b38ba0ec289b5d39"
+    }
+  ]
+}

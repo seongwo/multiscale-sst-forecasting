@@ -1,3 +1,4 @@
+# Adapted from OpenSTL for SST forecasting; see THIRD_PARTY.md and licenses/OpenSTL.txt.
 # Copyright (c) CAIRI AI Lab. All rights reserved
 
 from .convlstm_model import ConvLSTM_Model

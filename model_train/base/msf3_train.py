@@ -1,5 +1,9 @@
 import os
+os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
+import argparse
 import csv
+import json
+from pathlib import Path
 import numpy as np
 import torch
 
@@ -50,8 +54,38 @@ def append_result_csv(csv_path: str, row: dict):
         w.writerow({k: row.get(k, "") for k in CSV_COLUMNS})
 
 def main():
+    parser = argparse.ArgumentParser(description="Train the MSF-ST sum-fusion model")
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--device", choices=["cpu", "cuda"], default=None)
+    parser.add_argument("--data-path")
+    parser.add_argument("--mask-path")
+    parser.add_argument("--output-root", default=".")
+    parser.add_argument("--print-config", action="store_true")
+    args = parser.parse_args()
     cfg = get_default_cfg()
+    cfg["seed"] = args.seed
+    cfg["exp_name"] = f"msf_st_full4_gdl05_seed{args.seed}"
+    cfg["device"] = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
+    if args.data_path:
+        cfg["data_path"] = args.data_path
+    if args.mask_path:
+        cfg["mask_path"] = args.mask_path
+    output = Path(args.output_root)
+    cfg["ckpt_dir"] = str(output / "checkpoints")
+    cfg["results_dir"] = str(output / "results")
+    cfg["stats_cache"] = str(output / "checkpoints" / f"{cfg['exp_name']}_stats.json")
+    cfg["results_csv"] = str(output / "results" / f"{cfg['exp_name']}_results.csv")
+    if args.print_config:
+        print(json.dumps(cfg, indent=2))
+        return
     set_seed(cfg["seed"])
+    if cfg.get("deterministic_algorithms", False):
+        torch.set_num_threads(4)
+        torch.backends.cudnn.benchmark = False
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cuda.matmul.allow_tf32 = False
+        torch.backends.cudnn.allow_tf32 = False
+        torch.use_deterministic_algorithms(True)
 
     # --- defaults
     cfg.setdefault("exp_name")
@@ -98,6 +132,8 @@ def main():
         test_end=cfg["test_end"],
         stats_cache_json=cfg["stats_cache"],
     )
+    cfg["train_mean_c"] = mean
+    cfg["train_std_c"] = std
 
     device = cfg["device"]
 

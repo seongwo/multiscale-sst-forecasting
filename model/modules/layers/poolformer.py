@@ -1,3 +1,4 @@
+# Adapted from PoolFormer for SST forecasting; see THIRD_PARTY.md and licenses/PoolFormer.txt.
 # refer to the code from PoolFormer, Thanks!
 # https://github.com/sail-sg/poolformer/blob/main/models/poolformer.py
 

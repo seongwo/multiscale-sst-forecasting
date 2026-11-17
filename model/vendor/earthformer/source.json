@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/amazon-science/earth-forecasting-transformer",
+  "commit": "7732b03bdb366110563516c3502315deab4c2026",
+  "license": "Apache-2.0",
+  "files": {
+    "cuboid_transformer/utils.py": "932f1c4a1ea20bddc95b32ff20803157d1f61cb718cdf778e852c8f83dcadb04",
+    "cuboid_transformer/cuboid_transformer.py": "672206cf0d5daa3847a401846da6aadf88309c290684c8a24ec63d3deb7c67b7",
+    "cuboid_transformer/cuboid_transformer_patterns.py": "d6af225bc5fbb4d9313157326bb0497cd31087c5421924ce4fd6ea5bc384177b",
+    "utils/registry.py": "2320514dd444f0cbe33ae2104c910f84443b54b7ac7847b8f4e9843d643103cd"
+  }
+}

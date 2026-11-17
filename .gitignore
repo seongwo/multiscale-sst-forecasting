@@ -1,6 +1,7 @@
 checkpoints/
 logs/
 results/
+outputs/
 data/
 model_comparison/
 
@@ -26,8 +27,21 @@ scale_outputs_sample_*/
 
 # Local environments and credentials
 .venv/
+external/
 .env
 .env.*
 !.env.example
 *.pem
 *.key
+
+# Local workspace records
+AGENTS.md
+CODEX_CONTEXT.md
+GPT_Notes/
+.codex/
+note/
+
+# Small scientific records used by the documentation
+!/docs/results/
+!/docs/results/*.csv
+!/docs/results/*.json

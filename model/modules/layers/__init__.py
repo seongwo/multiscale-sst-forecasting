@@ -1,3 +1,4 @@
+# Adapted from OpenSTL for SST forecasting; see THIRD_PARTY.md and licenses/OpenSTL.txt.
 from .hornet import HorBlock
 from .moganet import ChannelAggregationFFN, MultiOrderGatedAggregation, MultiOrderDWConv
 from .poolformer import PoolFormerBlock

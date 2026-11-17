@@ -1,3 +1,4 @@
+# Adapted from UniFormer for SST forecasting; see THIRD_PARTY.md and licenses/UniFormer.txt.
 # refer to the code from Uniformer, Thanks!
 # https://github.com/Sense-X/UniFormer/blob/main/image_classification/models/uniformer.py
 

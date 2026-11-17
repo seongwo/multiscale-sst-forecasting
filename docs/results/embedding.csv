@@ -1,0 +1,5 @@
+time_embedding,scale_embedding,rmse_c,mae_c,mape_percent
+True,True,0.5265,0.3663,1.7132
+False,True,0.5379,0.3800,1.7502
+True,False,0.5432,0.3822,1.7607
+False,False,0.5443,0.3853,1.7703

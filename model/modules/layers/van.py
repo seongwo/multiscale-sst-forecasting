@@ -1,3 +1,4 @@
+# Adapted from VAN for SST forecasting; see THIRD_PARTY.md and licenses/VAN.txt.
 # refer to the code from VAN, Thanks!
 # https://github.com/Visual-Attention-Network/VAN-Classification
 

@@ -1,0 +1,7 @@
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+
+Earthformer core from Amazon Science earth-forecasting-transformer
+https://github.com/amazon-science/earth-forecasting-transformer
+Commit:7732b03bdb366110563516c3502315deab4c2026
+Core source files are unmodified. SST adaptation is outside this directory.
+Apache License2.0; see LICENSE.

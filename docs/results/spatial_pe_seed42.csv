@@ -1,0 +1,5 @@
+time_embedding,scale_embedding,spatial_pe,seed,rmse_c,mae_c
+True,True,False,42,0.5265,0.3663
+True,True,True,42,0.5352,0.3760
+False,True,True,42,0.5421,0.3826
+True,False,True,42,0.5418,0.3828
