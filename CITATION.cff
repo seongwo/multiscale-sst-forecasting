@@ -8,4 +8,4 @@ authors:
     given-names: "Seungwon"
 date-released: 2026-07-04
 version: "0.1.0"
-repository-code: "https://github.com/seongwo/oisst-convlstm"
+repository-code: "https://github.com/seongwo/multiscale-sst-forecasting"
